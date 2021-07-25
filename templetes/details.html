@@ -1,0 +1,56 @@
+{% extends 'head.html'  %}
+{% block content %}
+<div class="container">
+  <center><h3> Catagorised Product </h3></center>
+    <h3> {{ Products.title }}   </h3><hr>
+    <div class="row">
+        <div class="col-md-6">
+        <img src="{{ Products.image.url}}" alt="" class="img-fluid">
+
+        </div>
+        <div class="col-md-6">
+            <h4>{{ Products.title }} (Viewed:{{ Products.view_count}} times)</h4>
+            <h5>Catagory:{{Products.catagory}}</h5>
+            <p class="price">Price:${{ Products.selling_price }}</p>
+            <p>{{ Products.description }}</p>
+            <p class="text-info">Return Policy:{{Products.return_policy}}  </p>
+            <a href="{% url 'furnitureshop:addtocart' Products.id  %}" class=" btn btn-primary"> Add to Cart</a>
+        </div>
+        </div>
+
+
+
+
+
+
+</div>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

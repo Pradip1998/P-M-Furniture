@@ -1,0 +1,28 @@
+{% extends 'head.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <center><h3> Catagorised Product </h3></center>
+  {% for cat in Catagories %}
+  <h4>{{ cat.title }}</h4><hr>
+  <div class="row">
+    {% for Product in cat.product_set.all %}
+         <div class="col-md-3">
+           <div class="m-4">
+             <h5>{{ Product.title }}</a></h5>
+             <a href="{% url 'furnitureshop:single' Product.id  %}" >  <img src="{{ Product.image.url}}" alt="" class="img-flude" style="height:200px "></a>
+             <p class="mt-3">Price:$ {{ Product.selling_price }} </p>
+             <a href="{% url 'furnitureshop:addtocart' Product.id  %}" class=" btn btn-primary"> Add to Cart</a>
+
+
+
+           </div>
+
+
+        </div>
+        {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

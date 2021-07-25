@@ -1,0 +1,33 @@
+{% extends 'head.html'  %}
+{% block content %}
+<div class="container">
+    <center><h3> Search Result for <span class="text-info">"{{request.GET.keyword}}" </span> </h3></center>
+    <h3> {{ Products.title }}   </h3><hr>
+    <div class="row">
+        <div class="col-md-12">
+            {% for result in results %}
+      <a href="{% url 'furnitureshop:single' result.id  %}">  <img src="{{ result.image.url}}" alt="" class="img-fluid"></a>
+
+        </div>
+        <div class="row">
+        <div class="col-md-4">
+
+            <a href="{% url 'furnitureshop:single' result.id  %}"><h1>{{result.title}}</h1></a>
+            <p class="price">Price:${{ result.selling_price }}</p>
+            <p class="text-justify" >{{ result.description }}</p>
+            <p class="text-info">Return Policy:{{result.return_policy}}  </p>
+             <a href="{% url 'furnitureshop:addtocart' result.id  %}" class=" btn btn-primary"> Add to Cart</a>
+
+            {% endfor %}
+        </div>
+        </div>
+
+        </div>
+
+
+
+
+
+
+</div>
+{% endblock %}

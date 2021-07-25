@@ -1,0 +1,59 @@
+{%  extends 'head.html' %}
+
+{% load static %}
+{% block content   %}
+
+<div class="table-responsive">
+  <table class="table">
+
+  <thead>
+    <tr>
+      <th scope="col">SN</th>
+      <th scope="col">Product</th>
+      <th scope="col">Rate</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Subtotal</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for cp  in cart.cartproduct_set.all  %}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+
+      <td>{{ cp.product.title }}</td>
+      <td>${{ cp.rate }}</td>
+      <td>{{ cp.quantaty }}</td>
+      <td>${{ cp.subtotal }}</td>
+      <td>
+        <a href="{% url 'furnitureshop:managecart' cp.id %}?action=inc" class="btn btn-primary">+</a>
+        <a href="{% url 'furnitureshop:managecart' cp.id %}?action=dcr" class="btn btn-warning">-</a>
+        <a href="{% url 'furnitureshop:managecart' cp.id %}?action=rmv" class="btn btn-danger">*</a>
+
+      </td>
+    </tr>
+
+{% endfor %}
+<tr>
+  <th colspan="4" class="text-right">Total:</th>
+  <th>${{ cart.total_amout }}</th>
+  {% if cart.cartproduct_set.all %}
+  <th><a href="{% url 'furnitureshop:emptycart'  %}" > Empty cart   </a></th>
+  {% endif %}
+</tr>
+
+  </tbody>
+
+</table>
+
+{% if cart.cartproduct_set.all %}
+  <tr> <a href="{% url 'furnitureshop:checkout' %}" class="btn btn-info">Check-Cart And Order</a>
+</tr>
+  {% endif %}
+
+
+
+
+</div>
+
+  {% endblock %}

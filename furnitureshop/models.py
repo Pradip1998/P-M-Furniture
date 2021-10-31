@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,UserManager
+from django.utils.translation import gettext as _
 
 # Create your models here.
 
@@ -11,27 +14,79 @@ from django.contrib.auth.models import User
 
 
 
+class CustomUserManager(UserManager):
+    def _create_user(self, username, email, password, **extra_fields):
+
+        if not username:
+            raise ValueError('The given username must be set.')
+
+        if not email:
+            raise ValueError('The given email must be set')
+
+        email = self.normalize_email(email)
+        username = self.model.normalize_username(username)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, username, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        return self._create_user(username, email, password, **extra_fields)
+
+    def create_superuser(self, username, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must  have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+        return self._create_user(username, email, password, **extra_fields)
 
 
-
-
-
-
-
-
-
-
-
-
-class Customer(models.Model):
-    user=models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+class Customer(AbstractBaseUser, PermissionsMixin):
+    username_validator = UnicodeUsernameValidator()
+    username = models.CharField(
+        _('username'),
+        max_length=150,
+        unique=True,
+        help_text=_('Required. 150 characters or fewer.'),
+        validators=[username_validator],
+        error_messages={
+            'unique': _('A user with the username already exits.')
+        }
+    )
+    email = models.EmailField(_("email address"), max_length=254, unique=True, default='test@gmail.com')
     full_name=models.CharField(max_length=200)
     address=models.CharField(max_length=200,null=True,blank=True)
-    joint_on=models.DateTimeField(auto_now_add=True)
+    is_staff = models.BooleanField(
+        _('staff status'),
+        default=False,
+        help_text=_('Designates whether user can log into admin or not.')
+    )
+    is_active = models.BooleanField(
+        _('active'),
+        default=True,
+        help_text=_(
+            'Designates wheter this should be treated as active'
+            'Unselect this instead of deleting accounts.'
+        )
+    )
+    date_joined = models.DateTimeField(_('date_joined'), default=timezone.now)
+    email_varified = models.BooleanField(
+        _('email_varified'),
+        default=False,
+        help_text=_('Designates whether users email is varified.')
+    )
+    objects = CustomUserManager()
+
+    EMAIL_FIELD = 'email'
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
 
-    def __str__(self):
-        return self.full_name
 
 
 
@@ -55,6 +110,16 @@ class Product(models.Model):
 
     def __str__(self):
          return self.title
+
+
+class ProdctImage(models.Model):
+    product=models.ForeignKey(Product,on_delete=models.CASCADE)
+    image=models.ImageField(upload_to='pics')
+    def __str__(self):
+         return self.product
+
+
+
 
 class Cart(models.Model):
     customer=models.ForeignKey(Customer,on_delete=models.SET_NULL,null=True,blank=True)

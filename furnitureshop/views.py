@@ -5,13 +5,20 @@ from .models import *
 from django.core.paginator import Paginator
 from django.views.generic import View,TemplateView,CreateView,FormView
 from django.shortcuts import get_object_or_404
-from .form import CheckOutForm,CreateUserForm,Customerloginform
+from .form import CheckOutForm,CreateUserForm,Customerloginform,Adminloginform
 from django.urls import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.http import HttpResponse
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
+from .decorators import allowed_users
+from django.contrib.auth.models import Group
+
+
+
+
 
 
 
@@ -20,15 +27,14 @@ from django.core.mail import send_mail
 
 
 # Create your views here.
-
 class EcomMixin(object):
     def dispatch(self, request, *args, **kwargs):
         cart_id = self.request.session.get("cart_id")
         check = Cart.objects.filter(id=cart_id)
         if len(check)>0:
             cart_obj = Cart.objects.get(id=cart_id)
-            if request.user.is_authenticated and request.user.customer:
-                cart_obj.customer=request.user.customer
+            if request.user.is_authenticated :
+                cart_obj.customer=request.user
                 cart_obj.save()
 
 
@@ -44,9 +50,6 @@ class SearchView(TemplateView):
         context['results']=results
         return context
 
-
-
-
 def index(request):
     if request.method == "POST":
         name = request.POST['name']
@@ -61,10 +64,11 @@ def index(request):
                   [email])
 
     Products = Product.objects.filter(discount=False).order_by('-id')
-    paginator = Paginator(Products, 2)
+    paginator = Paginator(Products, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     discounted_product=Product.objects.filter(discount=True).order_by('-id')
+    trending_product=Product.objects.filter(view_count__gte=30)
 
 
 
@@ -72,7 +76,8 @@ def index(request):
         'count':Products.count,
         'Products':Products,
         'page_obj':page_obj,
-        'discounted_product':discounted_product
+        'discounted_product':discounted_product,
+        'trending_product':trending_product
 
        
 
@@ -86,6 +91,18 @@ def about(request):
     return render(request,'about.html')
 
 def contact(request):
+    if request.method == "POST":
+        name = request.POST['name']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        message = request.POST['message']
+        someth = Message(name=name, email=email, phone=phone, message=message)
+        someth.save()
+        send_mail(name,
+                  'Thankyou for your message',
+                  'pradipchapagain123@gmail.com',
+                  [email])
+
     return render(request,'contact.html')
 
 
@@ -147,14 +164,9 @@ class AddToCartView(EcomMixin,TemplateView):
             cart_obj.total_amout += product_obj.selling_price
             cart_obj.save()
 
-
-
-
-
-
         return context
 
-class ManageCart(EcomMixin,View):
+class ManageCart(EcomMixin,TemplateView):
     def get(self,request,*args, **kwargs):
 
         cp_id=self.kwargs["cp_id"]
@@ -201,16 +213,17 @@ class EmptycartView(EcomMixin,View):
 class CheckOutView(EcomMixin,CreateView):
     template_name = "shop.html"
     form_class = CheckOutForm
-    success_url = reverse_lazy('furnitureshop:mycart')
+    success_url = reverse_lazy('furnitureshop:index')
     form = CheckOutForm()
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.customer:
-            print("Logged in user")
+        if request.user.is_authenticated:
+            print(request.user)
+
         else:
             return redirect("login?next=/checkout")
-
-
         return super().dispatch(request,*args,**kwargs)
+
+
     def get_context_data(self, **kwargs):
         context=super().get_context_data(**kwargs)
         cart_id=self.request.session.get("cart_id")
@@ -228,6 +241,8 @@ class CheckOutView(EcomMixin,CreateView):
         else:
             pass
         return context
+
+
 
     def form_valid(self, form):
         cart_id = self.request.session.get("cart_id")
@@ -280,19 +295,21 @@ class CustomerRegister(EcomMixin,CreateView):
         password1=form.cleaned_data.get('password1')
         password2=form.cleaned_data.get('password2')
         email=form.cleaned_data.get('email')
-        user=User.objects.create_user(username,email,password1,)
-        form.instance.user=user
-        login(self.request,user)
+        full_name=form.cleaned_data.get('full_name')
+        address = form.cleaned_data.get('address')
+        customer=Customer.objects.create_user(username=username,password=password1,email=email,full_name=full_name,address=address)
+        customer.save()
+        group=Group.objects.get(name='customer')
+        customer.groups.add(group)
+        messages.success("Account created for:"+username)
         return super().form_valid(form)
+
     def get_success_url(self):
         if "next" in self.request.GET:
             next_url=self.request.GET.get("next")
             return next_url
         else:
             return self.success_url
-
-
-   
 
 
 class CustomerLogout(View):
@@ -302,16 +319,16 @@ class CustomerLogout(View):
 
 
 
-class CustomerLogin(EcomMixin,FormView):
+class CustomerLogin(FormView):
     template_name = "login.html"
     form_class = Customerloginform
     success_url =reverse_lazy('furnitureshop:index')
     def form_valid(self, form):
         username = self.request.POST.get('username')
         password = self.request.POST.get('password')
-        user = authenticate(self.request, username=username, password=password)
-        if user is not None and user.customer:
-            login(self.request,user)
+        customer = authenticate(self.request, username=username, password=password)
+        if customer is not None :
+            login(self.request,customer)
         else:
             return render(self.request,self.template_name,{"form":self.form_class,"Error":"Invalid credentials"})
 
@@ -325,20 +342,45 @@ class CustomerLogin(EcomMixin,FormView):
         else:
             return self.success_url
 
-
 class CustomerProfile(EcomMixin,TemplateView):
     template_name = "Profile.html"
 
 
     def get_context_data(self, **kwargs):
         context=super().get_context_data(**kwargs)
-        customer = self.request.user.customer
+        customer = self.request.user
 
         context['customer'] = customer
 
         orders=Order.objects.filter(cart__customer=customer)
         context['orders'] = orders
         return context
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

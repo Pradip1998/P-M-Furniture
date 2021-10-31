@@ -2,6 +2,7 @@
 
 {% load static %}
 {% block content   %}
+<a href="{% url 'furnitureshop:index' %}" class="btn btn-info">Continue shopping</a>
 
 <div class="table-responsive">
   <table class="table">
@@ -9,6 +10,7 @@
   <thead>
     <tr>
       <th scope="col">SN</th>
+      <th scope="col">Image</th>
       <th scope="col">Product</th>
       <th scope="col">Rate</th>
       <th scope="col">Quantity</th>
@@ -20,6 +22,9 @@
 {% for cp  in cart.cartproduct_set.all  %}
     <tr>
       <th scope="row">{{ forloop.counter }}</th>
+      <th> <figure class="itemside align-items-center">
+        <div class="aside"><img src="{{ cp.product.image.url}}" class="img-sm"></div>
+      </figure></th>
 
       <td>{{ cp.product.title }}</td>
       <td>${{ cp.rate }}</td>
@@ -55,5 +60,37 @@
 
 
 </div>
+<style>
+
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+
+body {
+    background-color: #eeeeee;
+    font-family: 'Open Sans', serif;
+    font-size: 14px
+}
+
+
+
+
+.img-sm {
+    width: 80px;
+    height: 80px
+}
+
+.itemside .info {
+    padding-left: 15px;
+    padding-right: 7px
+}
+
+
+
+
+
+
+
+
+
+</style>
 
   {% endblock %}

@@ -10,23 +10,36 @@ class CheckOutForm(ModelForm):
     class Meta:
         model=Order
         fields=["order_by","shipping_address","email","mobile"]
+
+
 class CreateUserForm(UserCreationForm):
     username=forms.CharField(widget=forms.TextInput())
     password1 = forms.CharField(widget=forms.PasswordInput())
     password2=forms.CharField(widget=forms.PasswordInput())
     email=forms.EmailField(widget=forms.EmailInput())
+    full_name = forms.CharField(widget=forms.TextInput())
+    address = forms.CharField(widget=forms.TextInput())
+
 
     class Meta:
         model=Customer
         fields=['username','email','password1','password2','full_name','address']
     def clean_username(self):
         uname=self.cleaned_data.get('username')
-        if User.objects.filter(username=uname).exists():
+        if Customer.objects.filter(username=uname).exists():
             raise forms.ValidationError("Already Existed User")
         return uname
 class Customerloginform(forms.Form):
     username = forms.CharField(widget=forms.TextInput())
     password = forms.CharField(widget=forms.PasswordInput())
+
+class Adminloginform(forms.Form):
+    ausername = forms.CharField(widget=forms.TextInput())
+    apassword = forms.CharField(widget=forms.PasswordInput())
+
+
+
+
 
 
 

@@ -45,6 +45,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\templetes\Asmin\asminlogin.html">
+          <value>
+            <Attribute>
+              <option name="separator" value="&#9;" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\templetes\Login.html">
           <value>
             <Attribute>

@@ -25,6 +25,8 @@ SECRET_KEY = 'django-insecure-ap&85m%%wxstjohl7v^kjnh&d^2r$y_foekdqr-ht03%cora*h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+AUTH_USER_MODEL ='furnitureshop.Customer'
+
 ALLOWED_HOSTS = []
 
 
@@ -45,8 +47,19 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
 ]
-SITE_ID = 2
-LOGIN_REDIRECT_URL = '/'
+SITE_ID = 3
+LOGIN_REDIRECT_URL = '/checkout'
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -92,12 +105,13 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'P&Mfurniture',
+        'NAME': 'ecommerce',
         'USER': 'postgres',
         'PASSWORD': '1234',
         'HOST': 'localhost'
     }
 }
+
 
 
 # Password validation
@@ -155,7 +169,7 @@ MEDIA_ROOT=BASE_DIR/'images'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'pradipchapagain123@gmail.com'
-EMAIL_HOST_PASSWORD = 'pradipthehero2055' #past the key or password app here
+EMAIL_HOST_PASSWORD = 'Pradipthehero2055'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'default from email'

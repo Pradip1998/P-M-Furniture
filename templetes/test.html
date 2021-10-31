@@ -1,15 +1,24 @@
-{% load socialaccount %}
-{% providers_media_js %}
 
-<!-- This snippet uses Font Awesome 5 Free as a dependency. You can download it at fontawesome.io! -->
-<div class="social">
-    <ul>
-        <li class="google">
-            <a href= "{% provider_login_url "google" %}">login</a>
+  <section class="discount_section  layout_padding">
+    <div class="container">
+    <h1 class="text-center">The Lastest Discount Collection</h1>
+    <hr>
+    <div class="row mt-3">
+        {% for Product in discounted_product %}
+        <div class="col-md-3 card">
+            <div class="m-4">
+                <h4><a href="{% url 'furnitureshop:single' Product.id  %}">{{Product.title}}</a></h4>
+                <img src="{{ Product.image.url}}" alt=" " class="img-fluid" style="height:200px; object-fit:contain;">
+              <p class="mt-3">Price:<strike>${{Product.marked_price}}</strike>${{Product.selling_price}}</p>
+                 <a href="{% url 'furnitureshop:addtocart'  Product.id %}" class="btn btn-primary" >Add To Cart </a>
 
 
-        </li>
-    </ul>
+            </div>
 
+        </div>
+        {% endfor %}
+
+    </div>
 
 </div>
+  </section>

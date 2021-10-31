@@ -1,33 +1,158 @@
-{% extends 'head.html'  %}
+{% extends 'head.html' %}
 {% block content %}
+
+
+
+
 <div class="container">
-    <center><h3> Search Result for <span class="text-info">"{{request.GET.keyword}}" </span> </h3></center>
-    <h3> {{ Products.title }}   </h3><hr>
-    <div class="row">
-        <div class="col-md-12">
-            {% for result in results %}
-      <a href="{% url 'furnitureshop:single' result.id  %}">  <img src="{{ result.image.url}}" alt="" class="img-fluid"></a>
+<div class="row ng-scope">
+    <div class="col-md-3 col-md-push-9">
 
-        </div>
-        <div class="row">
-        <div class="col-md-4">
+    </div>
+    <div class="col-md-9 col-md-pull-3">
+        <center><h3> Search Result for <span class="text-info">"{{request.GET.keyword}}" </span> </h3></center>
+        {% for result in results %}
+        <section class="search-result-item">
+            <a class="image-link" href="{% url 'furnitureshop:single' result.id  %}"><img class="image" src="{{ result.image.url}}">
+            </a>
+            <div class="search-result-item-body">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h4 class="search-result-item-heading"><a href="{% url 'furnitureshop:single' result.id  %}">{{result.title}}</a></h4>
+                        <p class="info">{{ result.view_count}} reviews</p>
+                        <p class="description">{{ result.description }}</p>
+                        <p class="vote">Return Policy:<strong>{{result.return_policy}}</strong> </p>
+                    </div>
+                    <div class="col-sm-3 text-align-center">
+                        <p class="value3 mt-sm">${{ result.selling_price }}</p>
+                        <h7 class="sizes">Catagory:
+							<span class="size" data-toggle="tooltip" title="small">{{result.catagory}}</span>
+                        </h7>
+                        <a class="btn btn-primary btn-info btn-sm" href="{% url 'furnitureshop:addtocart' result.id  %}">Add to cart</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endfor %}
 
-            <a href="{% url 'furnitureshop:single' result.id  %}"><h1>{{result.title}}</h1></a>
-            <p class="price">Price:${{ result.selling_price }}</p>
-            <p class="text-justify" >{{ result.description }}</p>
-            <p class="text-info">Return Policy:{{result.return_policy}}  </p>
-             <a href="{% url 'furnitureshop:addtocart' result.id  %}" class=" btn btn-primary"> Add to Cart</a>
-
-            {% endfor %}
-        </div>
-        </div>
-
-        </div>
 
 
-
-
-
-
+           </div>
 </div>
+</div>
+<style>
+
+
+body{margin-top:20px;
+background-color: #eee;
+}
+
+.search-result-categories>li>a {
+    color: #b6b6b6;
+    font-weight: 400
+}
+
+.search-result-categories>li>a:hover {
+    background-color: #ddd;
+    color: #555
+}
+
+.search-result-categories>li>a>.glyphicon {
+    margin-right: 5px
+}
+
+.search-result-categories>li>a>.badge {
+    float: right
+}
+
+.search-results-count {
+    margin-top: 10px
+}
+
+.search-result-item {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px
+}
+
+.search-result-item:after,
+.search-result-item:before {
+    content: " ";
+    display: table
+}
+
+.search-result-item:after {
+    clear: both
+}
+
+.search-result-item .image-link {
+    display: block;
+    overflow: hidden;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px
+}
+
+@media (min-width:768px) {
+    .search-result-item .image-link {
+        display: inline-block;
+        margin: -20px 0 -20px -20px;
+        float: left;
+        width: 200px
+    }
+}
+
+@media (max-width:767px) {
+    .search-result-item .image-link {
+        max-height: 200px
+    }
+}
+
+.search-result-item .image {
+    max-width: 100%
+}
+
+.search-result-item .info {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #999
+}
+
+.search-result-item .description {
+    font-size: 13px
+}
+
+.search-result-item+.search-result-item {
+    margin-top: 20px
+}
+
+@media (min-width:768px) {
+    .search-result-item-body {
+        margin-left: 200px
+    }
+}
+
+.search-result-item-heading {
+    font-weight: 400
+}
+
+.search-result-item-heading>a {
+    color: #555
+}
+
+@media (min-width:768px) {
+    .search-result-item-heading {
+        margin: 0
+    }
+}
+
+
+
+
+
+</style>
+
+
+
+
+
 {% endblock %}

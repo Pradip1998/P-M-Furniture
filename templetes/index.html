@@ -131,10 +131,12 @@
                 <div class="col-md-6">
                   <div class="detail-box">
                     <h1>
+                      <marquee width="60%" direction="left" height="100px">
                       P&M
                       <span>
                         Furniture
                       </span>
+                      </marquee>
                     </h1>
                     <p>
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
@@ -245,7 +247,7 @@
                 </div>
                 <div class="col-md-6 img-container">
                   <div class="img-box">
-                    <img src="{% static 'images/r7.jpg' %}" alt="">
+                    <img src="{% static 'images/r4.jpg' %}" alt="">
                   </div>
                 </div>
               </div>
@@ -495,6 +497,7 @@
       </div>
     </div>
 
+    {% for customer in Happycustomers%}
     <div class="container">
       <div class="client_container layout_padding2">
         <div class="client_box b-1">
@@ -504,17 +507,16 @@
             </div>
             <div class="name">
               <h5>
-                Magna
+                {{ customer.name }}
               </h5>
               <p>
-                Consectetur adipiscing
+                {{customer.post}}
               </p>
             </div>
           </div>
           <div class="detail">
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad minim veniam, quis nostrudLorem ipsum
+              {{customer.description}}
             </p>
             <div>
               <div class="arrow_img">
@@ -522,32 +524,8 @@
             </div>
           </div>
         </div>
-        <div class="client_box b-2">
-          <div class="client-id">
-            <div class="img-box">
-              <img src="{% static 'images/client-2.png' %}" alt="" />
-            </div>
-            <div class="name">
-              <h5>
-                Aliqua
-              </h5>
-              <p>
-                Consectetur adipiscing
-              </p>
+       {% endfor %}
 
-            </div>
-          </div>
-          <div class="detail">
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad minim veniam, quis nostrudLorem ipsum
-            </p>
-            <div>
-              <div class="arrow_img">
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>

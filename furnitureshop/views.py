@@ -69,6 +69,7 @@ def index(request):
     page_obj = paginator.get_page(page_number)
     discounted_product=Product.objects.filter(discount=True).order_by('-id')
     trending_product=Product.objects.filter(view_count__gte=30)
+    Happycustomers=Happycustomer.objects.all()
 
 
 
@@ -77,7 +78,8 @@ def index(request):
         'Products':Products,
         'page_obj':page_obj,
         'discounted_product':discounted_product,
-        'trending_product':trending_product
+        'trending_product':trending_product,
+        'Happycustomers':Happycustomers
 
        
 

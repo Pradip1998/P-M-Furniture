@@ -171,6 +171,13 @@ class Message(models.Model):
 
     def __str__(self):
         return self.name
+class Happycustomer(models.Model):
+    name=models.CharField(max_length=100)
+    post=models.CharField(max_length=100)
+    image = models.ImageField(upload_to='pics')
+    description= models.TextField(max_length=500)
+    def __str__(self):
+        return self.name
 
 
 
